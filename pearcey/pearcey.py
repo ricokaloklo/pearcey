@@ -1,6 +1,8 @@
 import numpy as np
+import scipy
 from scipy.special import factorial, gamma, hyp1f1
-from scipy.integrate import simps
+import scipy.integrate
+from packaging.version import Version
 
 def hyperu(a, b, z):
     """
@@ -77,32 +79,66 @@ def _P_using_power_series(x, y, nmax=5):
 
     return (1./4) * sum
 
-def pearcey_numerical(alpha, beta, nstep=50):
+def pearcey_numerical(alpha, beta, algo="quad", **kwargs):
+    """
+    Compute the Pearcey function/integral P(α, β) using numerical integration
+
+    Parameters
+    ----------
+    alpha : float/complex
+        First argument of the Pearcey function
+    beta : float
+        Second argument of the Pearcey function
+    algo : str, optional
+        Algorithm to use for the numerical integration. Can be either 'quad' or 'simpson'
+    kwargs: dict, optional
+        Additional arguments to pass to the numerical integration function
+
+    Returns
+    -------
+    float/complex
+        The value of the Pearcey function
+    """
+    _xmin = -4
+    _xmax = 4
+    nmax = kwargs.pop("nmax", 50)
+
     # Code adopted from https://gist.github.com/dpiponi/9176c7f6bf32803e9b2bf6e8c0b93ab5
-    x = np.linspace(-4.0, 4.0, nstep)
     # f(z) = z⁴+αz²+β
     # g(z) = exp(if(z))
     # Instead of integrating along x-axis we're
     # going to integrate along a contour displaced
     # vertically from the x-axis.
     # A good choice of displacement is the gradient
-    # d/(Im f(x+iy))/dy.
+    # d(Im f(x+iy))/dy.
     # That way, we're displacing in a direction that makes
     # |exp(if(x+iy))| smaller.
-    rate = 0.01
-    y = rate*(4*x**3+2*alpha*x+beta)
-    z = x+1j*y
+    def integrand(x):
+        rate = 0.01
+        y = rate*(4*x**3+2*alpha*x+beta)
+        z = x+1j*y
 
-    f = z**4+alpha*z**2+beta*z
-    g = np.exp(1j*f)
+        f = z**4+alpha*z**2+beta*z
+        g = np.exp(1j*f)
 
-    # ∫f(z)dz = ∫f(z)dz/dx dz
-    dz = 1.0+1j*rate*(12*x**2+2*alpha)
-    I = simps(g*dz, x)
+        # ∫f(z)dz = ∫f(z)dz/dx dz
+        dz = 1.0+1j*rate*(12*x**2+2*alpha)
+        return g*dz
 
+    if algo != "simpson" and Version(scipy.__version__) >= Version('1.10.0'):
+        # Use quad with complex_func=True for the numerical integration
+        I = scipy.integrate.quad(integrand, _xmin, _xmax, complex_func=True, **kwargs)[0]
+    else:
+        try:
+            from scipy.integrate import simps
+        except ImportError:
+            from scipy.integrate import simpson as simps
+        
+        x = np.linspace(_xmin, _xmax, nmax)
+        I = simps(np.array([integrand(_) for _ in x]), x=x)
     return I
 
-def pearcey(x, y, algo="confluent-hypergeometric", nmax=50):
+def pearcey(x, y, algo="numerical", nmax=50):
     """
     Compute the Pearcey function/integral P(x, y) using the specified algorithm
 
@@ -114,10 +150,11 @@ def pearcey(x, y, algo="confluent-hypergeometric", nmax=50):
         Second argument of the Pearcey function
     algo : str, optional
         Algorithm to use to compute the Pearcey function.
-        Can be either 'power-series', 'confluent-hypergeometric' or 'numerical'
+        Can be either 'power-series', 'confluent-hypergeometric', 'numerical'
     nmax : int, optional
         Number of terms to use in the expansion. Default is 50.
-        If algo is 'numerical', nmax is the number of steps to use in the numerical integration
+        If algo is 'numerical', nmax is the number of steps to use 
+        in the numerical integration if Simpsons rule is used.
 
     Returns
     -------
@@ -132,7 +169,7 @@ def pearcey(x, y, algo="confluent-hypergeometric", nmax=50):
         return 2*np.exp(1j*np.pi/8) * _P_using_confluent_hypergeometric_funcs(x * np.exp(-1j*np.pi/4), y * np.exp(1j*np.pi/8), nmax=nmax)
     elif algo == "numerical":
         # Direct numerical integration
-        return pearcey_numerical(x, y, nstep=nmax)
+        return pearcey_numerical(x, y, nmax=nmax)
     else:
         raise ValueError("Invalid algorithm. Choose either 'power-series', 'confluent-hypergeometric' or 'numerical'.")
 
