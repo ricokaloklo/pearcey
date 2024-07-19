@@ -105,7 +105,7 @@ def pearcey_numerical(alpha, beta, algo="quad", **kwargs):
     nmax = kwargs.pop("nmax", 50)
 
     # Code adopted from https://gist.github.com/dpiponi/9176c7f6bf32803e9b2bf6e8c0b93ab5
-    # f(z) = z⁴+αz²+β
+    # f(z) = z⁴+αz²+βz
     # g(z) = exp(if(z))
     # Instead of integrating along x-axis we're
     # going to integrate along a contour displaced
