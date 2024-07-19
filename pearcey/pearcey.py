@@ -40,9 +40,9 @@ def hyperu(a, b, z):
 def _Pn(x, n):
     # See Eq. (5) in 1601.03615
     if np.real(x) >= 0:
-        return 2**(-(n + 3./2)) * gamma(n + 1./2) * hyperu(n/2. + 1./4, 1./2, (x**2)/4.)
+        return 2**(-(n + 3/2)) * gamma(n + 1/2) * hyperu(n/2 + 1/4, 1/2, (x**2)/4)
     else:
-        return (1./4)*gamma(n/2. + 1./4) * hyp1f1(n/2. + 1./4, 1./2, (x**2)/4.) - (x/4.)*gamma(n/2. + 3./4) * hyp1f1(n/2. + 3./4, 3./2, (x**2)/4.)
+        return (1/4)*gamma(n/2 + 1/4) * hyp1f1(n/2 + 1/4, 1/2, (x**2)/4) - (x/4)*gamma(n/2 + 3/4) * hyp1f1(n/2 + 3/4, 3/2, (x**2)/4)
 
 def _P_using_confluent_hypergeometric_funcs(x, y, nmax=5):
     # See Eq. (4) in 1601.03615
@@ -65,7 +65,7 @@ def _a_n(x, y, n, cache={}):
     elif n == 1:
         a_n = y
     else:
-        a_n = (1./n)*( y * _a_n(x, y, n-1, cache=cache) + 2 * x * _a_n(x, y, n-2, cache=cache) )
+        a_n = (1/n)*( y * _a_n(x, y, n-1, cache=cache) + 2 * x * _a_n(x, y, n-2, cache=cache) )
 
     cache[n] = a_n
     return a_n
@@ -75,9 +75,9 @@ def _P_using_power_series(x, y, nmax=5):
     sum = 0
     _cached_a_n = {}
     for n in range(0, nmax+1):
-        sum += (-1)**n * gamma((2*n + 1)/4.) * _a_n(x, y, 2*n, cache=_cached_a_n)
+        sum += (-1)**n * gamma((2*n + 1)/4) * _a_n(x, y, 2*n, cache=_cached_a_n)
 
-    return (1./4) * sum
+    return (1/4) * sum
 
 def pearcey_numerical(alpha, beta, algo="quad", **kwargs):
     """
