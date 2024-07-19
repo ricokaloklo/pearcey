@@ -1,6 +1,10 @@
 # pearcey
 A python package to compute the Pearcey function/integral in catastrophe optics
 
+The Pearcey function $\text{Pe}(x, y)$ is defined as
+
+$$\text{Pe}(x, y) = \int_{-\infty}^{\infty}e^{i(t^4 + xt^2 + yt)} dt$$
+
 ![pearcey](https://github.com/user-attachments/assets/bcefda01-fd9e-4323-95a2-b9e34a3b88e6)
 
 ## Requirements
