@@ -102,7 +102,7 @@ def pearcey_numerical(alpha, beta, nstep=50):
 
     return I
 
-def pearcey(x, y, algo="power-series", nmax=50):
+def pearcey(x, y, algo="confluent-hypergeometric", nmax=50):
     """
     Compute the Pearcey function/integral P(x, y) using the specified algorithm
 
