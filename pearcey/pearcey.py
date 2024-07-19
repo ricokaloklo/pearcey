@@ -90,7 +90,8 @@ def pearcey_numerical(alpha, beta, algo="quad", **kwargs):
     beta : float
         Second argument of the Pearcey function
     algo : str, optional
-        Algorithm to use for the numerical integration. Can be either 'quad' or 'simpson'
+        Algorithm to use for the numerical integration. Can be either 'quad' or 'simpson'.
+        Default is quad if you have scipy version >= 1.10.0, otherwise simpson rule is used
     kwargs: dict, optional
         Additional arguments to pass to the numerical integration function
 
