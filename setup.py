@@ -13,7 +13,6 @@ setuptools.setup(
     install_requires=[
         "numpy",
         "scipy",
-        "matplotlib",
     ],
     classifiers=[
         "License :: OSI Approved :: MIT License",
