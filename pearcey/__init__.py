@@ -1,1 +1,1 @@
-from .pearcey import pearcey, pearcey_numerical
+from .pearcey import pearcey, pearcey_numerical, Pe

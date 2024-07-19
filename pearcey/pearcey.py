@@ -177,3 +177,23 @@ def pearcey(x, y, algo="numerical", nmax=50):
     else:
         raise ValueError("Invalid algorithm. Choose either 'power-series', 'confluent-hypergeometric' or 'numerical'.")
 
+@np.vectorize
+def Pe(x, y, **kwargs):
+    """
+    A vectorized version of the Pearcey function
+
+    Parameters
+    ----------
+    x : array of float/complex
+        First argument of the Pearcey function
+    y : array of float
+        Second argument of the Pearcey function
+    kwargs: dict, optional
+        Additional arguments to pass to the underlying pearcey()
+
+    Returns
+    -------
+    array of float/complex
+        The value of the Pearcey function
+    """
+    return pearcey(x, y, **kwargs)
