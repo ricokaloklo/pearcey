@@ -151,6 +151,9 @@ def pearcey(x, y, algo="numerical", nmax=50):
     algo : str, optional
         Algorithm to use to compute the Pearcey function.
         Can be either 'power-series', 'confluent-hypergeometric', 'numerical'
+
+        NOTE: Both 'power-series' and 'confluent-hypergeometric' are only
+        valid for small values of x and y. For large values, use 'numerical'.
     nmax : int, optional
         Number of terms to use in the expansion. Default is 50.
         If algo is 'numerical', nmax is the number of steps to use 
