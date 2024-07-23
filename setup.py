@@ -3,7 +3,7 @@ from pathlib import Path
 
 setuptools.setup(
     name="pearcey",
-    version="0.1.0",
+    version="0.1.1",
     description="A python package to compute the Pearcey function/integral in catastrophe optics",
     long_description=Path("README.md").read_text(encoding="utf-8"),
     long_description_content_type="text/markdown",
