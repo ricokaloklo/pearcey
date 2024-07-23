@@ -4,6 +4,9 @@ from scipy.special import factorial, gamma, hyp1f1
 import scipy.integrate
 from packaging.version import Version
 
+_nmax_default = 50
+_nmax_default_numerical = 500
+
 def hyperu(a, b, z):
     """
     Tricomi's confluent hypergeometric function U(a, b; z)
@@ -102,7 +105,7 @@ def pearcey_numerical(alpha, beta, algo="quad", **kwargs):
     """
     _xmin = -4
     _xmax = 4
-    nmax = kwargs.pop("nmax", 50)
+    nmax = kwargs.pop("nmax", _nmax_default)
 
     # Code adopted from https://gist.github.com/dpiponi/9176c7f6bf32803e9b2bf6e8c0b93ab5
     # f(z) = z⁴+αz²+βz
@@ -139,7 +142,7 @@ def pearcey_numerical(alpha, beta, algo="quad", **kwargs):
         I = simps(np.array([integrand(_) for _ in x]), x=x)
     return I
 
-def pearcey(x, y, algo="numerical", nmax=50):
+def pearcey(x, y, algo="numerical", nmax=None):
     """
     Compute the Pearcey function/integral P(x, y) using the specified algorithm
 
@@ -157,8 +160,10 @@ def pearcey(x, y, algo="numerical", nmax=50):
         valid for small values of x and y. For large values, use 'numerical'.
     nmax : int, optional
         Number of terms to use in the expansion. Default is 50.
+
         If algo is 'numerical', nmax is the number of steps to use 
-        in the numerical integration if Simpsons rule is used.
+        in the numerical integration if Simpsons rule is used,
+        and the default value is 500 instead
 
     Returns
     -------
@@ -166,13 +171,19 @@ def pearcey(x, y, algo="numerical", nmax=50):
         The value of the Pearcey function
     """
     if algo == "power-series":
+        if nmax is None:
+            nmax = _nmax_default
         # See the inline expression just above Eq. (2) in 1601.03615
         return 2*np.exp(1j*np.pi/8) * _P_using_power_series(x * np.exp(-1j*np.pi/4), y * np.exp(1j*np.pi/8), nmax=nmax)
     elif algo == "confluent-hypergeometric":
+        if nmax is None:
+            nmax = _nmax_default
         # See the inline expression just above Eq. (2) in 1601.03615
         return 2*np.exp(1j*np.pi/8) * _P_using_confluent_hypergeometric_funcs(x * np.exp(-1j*np.pi/4), y * np.exp(1j*np.pi/8), nmax=nmax)
     elif algo == "numerical":
         # Direct numerical integration
+        if nmax is None:
+            nmax = _nmax_default_numerical
         return pearcey_numerical(x, y, nmax=nmax)
     else:
         raise ValueError("Invalid algorithm. Choose either 'power-series', 'confluent-hypergeometric' or 'numerical'.")
