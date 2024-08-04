@@ -125,7 +125,7 @@ def pearcey_numerical(alpha, beta, algo="quad", **kwargs):
         f = z**4+alpha*z**2+beta*z
         g = np.exp(1j*f)
 
-        # ∫f(z)dz = ∫f(z)dz/dx dz
+        # ∫f(z)dz = ∫f(z)dz/dx dx
         dz = 1.0+1j*rate*(12*x**2+2*alpha)
         return g*dz
 
